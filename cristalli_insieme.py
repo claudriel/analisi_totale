@@ -19,9 +19,11 @@ import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     
-    dir_campioni_list= os.listdir('.')
+    campioni_path ="./campioni/"
+    
+    
+    dir_campioni_list= os.listdir(campioni_path)
         
-    dir_campioni_list.remove("cristalli_insieme.py")
     cristalli = np.array([])
     media_array = np.array([])
     
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     
     for indice in dir_campioni_list:
         print indice
-        dir_date_list= os.listdir(indice)
+        dir_date_list= os.listdir(campioni_path+indice)
         dir_date_list.remove("mediePesate")
         
         media_25=np.array([])
@@ -70,15 +72,15 @@ if __name__ == '__main__':
         media_array = np.array([])
         cristalli = np.array([])
         
-        mediePesate_path=indice+'/mediePesate'
+        mediePesate_path=campioni_path+indice+'/mediePesate'
         
         for date in dir_date_list:
             print date
-            img_path =indice+'/'+date+"/img/"
-            working_path =indice+'/'+date+"/histo"
-            img_path =indice+'/'+date+"/img/"
-            cristalli_path =indice+'/'+date+"/cristalli"
-            media_path =indice+'/'+date+"/media"
+            img_path =campioni_path+indice+'/'+date+"/img/"
+            working_path =campioni_path+indice+'/'+date+"/histo"
+            img_path =campioni_path+indice+'/'+date+"/img/"
+            cristalli_path =campioni_path+indice+'/'+date+"/cristalli"
+            media_path =campioni_path+indice+'/'+date+"/media"
             
             try: 
                 os.stat(media_path)  #contrololla se esiste il cammino "working_path"
@@ -99,18 +101,20 @@ if __name__ == '__main__':
             media_array = np.array([])
             cristalli = np.array([])
             
-            for temp in dir_temp_list:
-                print temp
-                dir_img_list=os.listdir(img_path+temp)
-                cristalli = np.array([])
-                n=0
+            if date != "14luglioPomeriggio":
+            
+                for temp in dir_temp_list:
+                    print temp
+                    dir_img_list=os.listdir(img_path+temp)
+                    cristalli = np.array([])
+                    n=0
                 
-                for k in dir_img_list:
+                    for k in dir_img_list:
                     #print k
-                    file_path=img_path+temp+"/"+k
+                        file_path=img_path+temp+"/"+k
                     
                     #apro le immagini, holo001,...etc per ogni cartella per ogni ciclo
-                    if date != '14luglioPomeriggio':
+                    
                             
                         im = Image.open(file_path).convert("L")
                         I  = np.asarray(im)
@@ -119,14 +123,7 @@ if __name__ == '__main__':
                         lw,num = measurements.label(I)
                         area = (measurements.sum(I, lw, range(num + 1))/255)*5.3*5.3
                     
-                    else :
-                        lx, ly = I.shape            
-                        crop_I = I[ lx-370:lx-15, ly-346:ly-1]
-        
-        
-                        #misuro l'area (5.3 è la dimensione dei pixel della mia camera)
-                        lw,num = measurements.label(crop_I)
-                        area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3    
+                        
                
                     ########
                     #per vedere i cristalli colorati e plottare aree.
@@ -139,20 +136,23 @@ if __name__ == '__main__':
                     ##########
             
                     #maschere : da cosa parto e fino dove arrivo a leggere l'array delle aree
-                    area=area[(area <= 1500)]
-                    area=area[(area>1)]
+                        area=area[(area <= 1500)]
+                        area=area[(area>1)]
                     
-                    cristalli = np.append(cristalli,area[0:])
-                    n=n+num
+                        cristalli = np.append(cristalli,area[0:])
+                        n=n+num
                 
                 ####SALVA I CRISTALLI IN .TXT NELLA CARTELLA CRISTALLI
-                #np.savetxt(cristalli_path+'\cristalli'+temp, cristalli)
+                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
                 
                 
-                media_singola=np.average(cristalli)
-                media_array=np.append(media_array,media_singola)
                
-                numeroC_array=np.append(numeroC_array,n)
+               
+                
+                    media_singola=np.average(cristalli)
+                    media_array=np.append(media_array,media_singola)
+               
+                    numeroC_array=np.append(numeroC_array,n)
                 
                 
                 #########
@@ -167,8 +167,56 @@ if __name__ == '__main__':
                 #plt.clf() #altrimenti se non lo cancello l'istogramma, mi sovrappone a quello del ciclo prima.
                 
             ####salvo array con solo tempe 25, 30, etc di ogni set di capioni
+            else:
+                
+                for temp in dir_temp_list:
+                    print temp
+                    dir_img_list=os.listdir(img_path+temp)
+                    cristalli = np.array([])
+                    n=0
+                
+                    for k in dir_img_list:
+                        file_path=img_path+temp+"/"+k
+                             
+                        im = Image.open(file_path).convert("L")
+                        I  = np.asarray(im)
+                        
+                        lx, ly = I.shape
+                        crop_I = I[ lx-370:lx-15, ly-346:ly-1]
             
             
+                        lw,num = measurements.label(crop_I)
+                        area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
+                        
+                        area=area[(area <= 1500)]
+                        area=area[(area>1)]
+                    
+                        cristalli = np.append(cristalli,area[0:])
+                        n=n+num
+                
+                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
+                
+                
+                
+                    media_singola=np.average(cristalli)
+                    media_array=np.append(media_array,media_singola)
+               
+                    numeroC_array=np.append(numeroC_array,n)
+                
+                
+                #########
+                #HISTOGRAMMA con bin>110
+                
+                #cristalli=cristalli[(cristalli>110)]
+                #weights=np.ones_like(cristalli)/float(len(cristalli))
+                #plt.hist(cristalli, bins=4, weights=weights)
+                #plt.xlabel('Area xtals')
+                #plt.ylabel('Frequenze')
+                #plt.savefig(working_path+"/HISTO_TOT"+temp+".png", figuresize=(8,6), dpi=80, format="png")
+                #plt.clf() #altrimenti se non lo cancello l'istogramma, mi sovrappone a quello del ciclo prima.
+                
+            ####salvo array con solo tempe 25, 30, etc di ogni set di capioni
+             
             media_25_singola=media_array[0]
             media_25=np.append(media_25,media_25_singola)
                         
@@ -264,6 +312,8 @@ if __name__ == '__main__':
             #plt.ylabel('Media Area Pesata ($\mu$m$^2$)')
             #plt.savefig(media_path+"/"+"medie_"+date+"_singole"+".png", figuresize=(8,6), dpi=80, format="png")
             #plt.show()
+        
+        
         
         media_finale_25=sum(np.multiply(media_25,numeroC_25))/sum(numeroC_25)
         
@@ -387,8 +437,13 @@ if __name__ == '__main__':
         np.savetxt(mediePesate_path+"/mediePesate_"+indice, media)
         np.savetxt(mediePesate_path+"/devS_"+indice, devS)
         
-        
+        def func(x, A, B, C, D):
+            return A + B*(1/(1+np.exp((-(x)+C)/D)))
+
+        xdata = np.linspace(0, 85, 2000)
+        plt.xlim([20,90])
         plt.errorbar(temperatura,media,yerr=devS,fmt='-o')
+        plt.plot(xdata, func(xdata, 264.659,-65.4014,79.0663,1.55474), 'r-', label='fit')
         plt.xlabel('Temperatura ($^o$C)')
         plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
         plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
@@ -396,5 +451,6 @@ if __name__ == '__main__':
         plt.show()
         
         
+    
         
             
