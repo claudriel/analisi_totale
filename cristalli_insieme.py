@@ -15,6 +15,9 @@ from PIL import Image
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
+#from histo_punti import *
+#from eugenio import *
+
 cutoff=150
 binnaggio=10
 
@@ -88,294 +91,118 @@ if __name__ == '__main__':
             area_histo=np.zeros(binnaggio)
             frequenze_histo=np.zeros(binnaggio)  
             
-            if date == "28giugno":
-                i=0
-                for temp in dir_temp_list:
-                    print temp
-                    dir_img_list=os.listdir(img_path+temp)
-                    cristalli = np.array([])
-                    numero_cristalli = np.array([])
-                    lunghezza=0
+            
+            i=0
+            for temp in dir_temp_list:
+                print temp
+                dir_img_list=os.listdir(img_path+temp)
+                cristalli = np.array([])
+                numero_cristalli = np.array([])
+                lunghezza=0
                 
-                    for k in dir_img_list:
-                        file_path=img_path+temp+"/"+k
+                for k in dir_img_list:
+                    file_path=img_path+temp+"/"+k
                              
-                        im = Image.open(file_path).convert("L")
-                        I  = np.asarray(im)
-                        
+                    im = Image.open(file_path).convert("L")
+                    I  = np.asarray(im)
+                    
+                    if date == "28giugno":
                         lx, ly = I.shape
                         crop_I = I[lx-502:lx-126, ly-376:ly]
-            
                         lw,num = measurements.label(crop_I)
                         area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
                         
-                        area=area[(area <= 1500)]
-                        area=area[(area>cutoff)]
-                    
-                        cristalli = np.append(cristalli,area[0:])
-                        lunghezza=len(area)+lunghezza
-                        numero_cristalli=np.append(numero_cristalli, lunghezza)
-                        
-                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
-                    media_singola=np.average(cristalli) #media di una temperatura di un campione (in base al ciclo)
-                    media_array=np.append(media_array,media_singola) #alla fine del ciclo array con medie da 25->85 di un campione
-                    numeroC_array=np.append(numeroC_array,lunghezza) #stessa cosa per cristalli
-            
-#                    FIGURA 1. aree cristalli in funzione della frequenza, histo e non
-#                    weights=np.ones_like(cristalli)/float(len(cristalli))
-                    plt.figure(1)
-                    a=plt.hist(cristalli, bins=binnaggio,histtype='step',lw=2, label=temp)
-                    
-                    colori=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
-                    plt.figure(2)
-                    x=(a[1][0:binnaggio]+a[1][1:binnaggio+1])/2
-                    y=a[0]
-#                    
-#                    plt.plot(x,y,color=colori[0+i],marker='o',label=temp)
-#                    plt.legend(bbox_to_anchor=(0,1.01,1,0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=7)
-#                    plt.savefig(working_path+"/HISTO_10_"+temp+date+".png", figuresize=(8,6), dpi=80, format="png")
-#                    plt.xlabel('Area cristalli ($\mu$m$^2$)')
-#                    plt.ylabel('Frequenze')
-#                    i=i+1
-##                    plt.hist(cristalli, bins=4, weights=weights)
-##                    
-##                    plt.savefig(working_path+"/HISTO_TOT"+temp+".png", figuresize=(8,6), dpi=80, format="png")
-#                    
-#                    
-                    frequenze_histo=np.vstack([frequenze_histo,y])
-                    area_histo=np.vstack([area_histo,x])
-#                
-                area_histo_tot=area_histo+area_histo_tot
-                
-                frequenze_histo_tot=frequenze_histo+frequenze_histo_tot
-               # plt.clf() #cancella da un campione all'altro,le temperature me le sovrappone
-               
-                media=media_array*numeroC_array+media
-                dev=np.vstack([dev,media_array])
-                somma_cristalli=numeroC_array+somma_cristalli
-            
-            elif date == "29giugnoPomeriggio":
-                i=0               
-                for temp in dir_temp_list:
-                    print temp
-                    dir_img_list=os.listdir(img_path+temp)
-                    cristalli = np.array([])
-                    lunghezza=0
-                
-                    for k in dir_img_list:
-                        file_path=img_path+temp+"/"+k
-                             
-                        im = Image.open(file_path).convert("L")
-                        I  = np.asarray(im)
-                        
+                    elif date == "29giugnoPomeriggio":
                         lx, ly = I.shape
                         crop_I = I[ lx-482:lx-182, ly-300:ly]
-            
                         lw,num = measurements.label(crop_I)
                         area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
                         
-                        area=area[(area <= 1500)]
-                        area=area[(area>cutoff)]
-                       
-                        cristalli = np.append(cristalli,area[0:])
-                        lunghezza=len(area)+lunghezza
-                        numero_cristalli=np.append(numero_cristalli, lunghezza)
-                
-                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
-                    media_singola=np.average(cristalli)
-                    media_array=np.append(media_array,media_singola)
-                    numeroC_array=np.append(numeroC_array,lunghezza) #stessa cosa x numeri
-            
-#                    FIGURA 1. aree cristalli in funzione della frequenza, histo e non
-                    #weights=np.ones_like(cristalli)/float(len(cristalli))
-                    plt.figure(1)
-                    a=plt.hist(cristalli, bins=binnaggio,histtype='step',lw=2, label=temp)
-                    
-                    colori=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
-                    plt.figure(2)
-                    x=(a[1][0:binnaggio]+a[1][1:binnaggio+1])/2
-                    y=a[0]
-#                   
-#                    plt.plot(x,y,color=colori[0+i],marker='o',label=temp)
-#                    plt.legend(bbox_to_anchor=(0,1.01,1,0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=7)
-#                    plt.savefig(working_path+"/HISTO_10_"+temp+date+".png", figuresize=(8,6), dpi=80, format="png")
-#                    plt.xlabel('Area cristalli ($\mu$m$^2$)')
-#                    plt.ylabel('Frequenze')
-#                    i=i+1
-##                    plt.hist(cristalli, bins=4, weights=weights)
-##                    
-##                    plt.savefig(working_path+"/HISTO_TOT"+temp+".png", figuresize=(8,6), dpi=80, format="png")
-#                   
-                    area_histo=np.vstack([area_histo,x])
-                    
-                    frequenze_histo=np.vstack([frequenze_histo,y])
-                   
-                
-                area_histo_tot=area_histo+area_histo_tot
-               
-                frequenze_histo_tot=frequenze_histo+frequenze_histo_tot
-                #plt.clf()
-                
-                media=media_array*numeroC_array+media
-                dev=np.vstack([dev,media_array])
-                somma_cristalli=numeroC_array+somma_cristalli
-            
-            elif date == "14luglioPomeriggio":
-                i=0
-                for temp in dir_temp_list:
-                    print temp
-                    dir_img_list=os.listdir(img_path+temp)
-                    cristalli = np.array([])
-                    lunghezza=0
-                
-                    for k in dir_img_list:
-                        file_path=img_path+temp+"/"+k
-                             
-                        im = Image.open(file_path).convert("L")
-                        I  = np.asarray(im)
-                        
+                    elif date == "14luglioPomeriggio":
                         lx, ly = I.shape
                         crop_I = I[ lx-482:lx-182, ly-300:ly]
-            
                         lw,num = measurements.label(crop_I)
                         area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
                         
-                        area=area[(area <= 1500)]
-                        area=area[(area>cutoff)]
-                    
-                        cristalli = np.append(cristalli,area[0:])
-                        lunghezza=len(area)+lunghezza
-                        numero_cristalli=np.append(numero_cristalli, lunghezza)
+                    elif date == "8novembre":
+                        lx, ly = I.shape
+                        crop_I = I[ lx-512:lx-212, ly-300:ly]
+                        lw,num = measurements.label(crop_I)
+                        area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
                         
-                
-                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
-                    media_singola=np.average(cristalli)
-                    media_array=np.append(media_array,media_singola)
-                    numeroC_array=np.append(numeroC_array,lunghezza)
-            
-#                    FIGURA 1. aree cristalli in funzione della frequenza, histo e non            
-                    #weights=np.ones_like(cristalli)/float(len(cristalli))
-                    plt.figure(1)
-                    a=plt.hist(cristalli, bins=binnaggio,histtype='step',lw=2, label=temp)
-                    
-                    colori=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
-                    plt.figure(2)
-                    x=(a[1][0:binnaggio]+a[1][1:binnaggio+1])/2
-                    y=a[0]
-#                    
-#                    plt.plot(x,y,color=colori[0+i],marker='o',label=temp)
-#                    plt.legend(bbox_to_anchor=(0,1.01,1,0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=7)
-#                    plt.savefig(working_path+"/HISTO_10_"+temp+date+".png", figuresize=(8,6), dpi=80, format="png")
-#                    plt.xlabel('Area cristalli ($\mu$m$^2$)')
-#                    plt.ylabel('Frequenze')
-#                    i=i+1
-##                    plt.hist(cristalli, bins=4, weights=weights)
-##                    
-##                    plt.savefig(working_path+"/HISTO_TOT"+temp+".png", figuresize=(8,6), dpi=80, format="png")
-                    area_histo=np.vstack([area_histo,x])
-                    frequenze_histo=np.vstack([frequenze_histo,y])
-                    
-                
-                frequenze_histo_tot=frequenze_histo+frequenze_histo_tot
-                area_histo_tot=area_histo+area_histo_tot
-                
-                #plt.clf()
-               
-                media=media_array*numeroC_array+media
-                dev=np.vstack([dev,media_array])
-                somma_cristalli=numeroC_array+somma_cristalli
-                 
-            else:
-                i=0
-                for temp in dir_temp_list:
-                    print temp
-                    dir_img_list=os.listdir(img_path+temp)
-                    cristalli = np.array([])
-                    lunghezza=0
-                
-                    for k in dir_img_list:
-                    #print k
-                        file_path=img_path+temp+"/"+k
-                    
-                    #apro le immagini, holo001,...etc per ogni cartella per ogni ciclo
-                                                
-                        im = Image.open(file_path).convert("L")
-                        I  = np.asarray(im)
-                   
-                        #misuro l'area (5.3 è la dimensione dei pixel della mia camera)
+                    elif date == "9novembre":
+                        lx, ly = I.shape
+                        crop_I = I[ lx-512:lx-172, ly-340:ly]
+                        lw,num = measurements.label(crop_I)
+                        area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
+                        
+                    elif date == "13novembre":
+                        lx, ly = I.shape
+                        crop_I = I[ lx-512:lx-102, ly-410:ly]
+                        lw,num = measurements.label(crop_I)
+                        area = (measurements.sum(crop_I, lw, range(num + 1))/255)*5.3*5.3
+                        
+                    else:
                         lw,num = measurements.label(I)
                         area = (measurements.sum(I, lw, range(num + 1))/255)*5.3*5.3
-
-                    ########
-                    #per vedere i cristalli colorati e plottare aree.
-                    #plt.figure(1)
-                    #plt.imshow(lw)
-            
-                    #plt.figure(2)
-                    #plt.plot(area,'o')
-                    #plt.show()
-                    ##########
-            
-                    #maschere : da cosa parto e fino dove arrivo a leggere l'array delle aree
-                        area=area[(area <= 1500)]
-                        area=area[(area>cutoff)]
+                        
+                             
+                    area=area[(area <= 1500)]
+                    area=area[(area>cutoff)]
                     
-                        cristalli = np.append(cristalli,area[0:])
-                        lunghezza=len(area)+lunghezza
-                        numero_cristalli=np.append(numero_cristalli, lunghezza)
-
-                    #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
-                    media_singola=np.average(cristalli)
-                    media_array=np.append(media_array,media_singola)
-                    numeroC_array=np.append(numeroC_array,lunghezza)
-            
-
-#                    FIGURA 1. aree cristalli in funzione della frequenza, histo e non
+                    cristalli = np.append(cristalli,area[0:])
+                    lunghezza=len(area)+lunghezza
+                    numero_cristalli=np.append(numero_cristalli, lunghezza)
+                        
+                #np.savetxt(cristalli_path+'\cristalliOOOOOOOOO'+temp, cristalli)
+                media_singola=np.average(cristalli) #media di una temperatura di un campione (in base al ciclo)
+                media_array=np.append(media_array,media_singola) #alla fine del ciclo array con medie da 25->85 di un campione
+                numeroC_array=np.append(numeroC_array,lunghezza) #stessa cosa per cristalli
+                
+               # histo (cristalli,binnaggio,temp)
+#              FIGURA 1. aree cristalli in funzione della frequenza, histo e non
+#                plt.figure(1)
+#                a=plt.hist(cristalli, bins=binnaggio,histtype='step',lw=2, label=temp)
+#                    
+#                colori=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
+#                plt.figure(2)
+#                x=(a[1][0:binnaggio]+a[1][1:binnaggio+1])/2
+#                y=a[0]
                
-                    #weights=np.ones_like(cristalli)/float(len(cristalli))
-                    plt.figure(1)
-                    a=plt.hist(cristalli, bins=binnaggio,histtype='step',lw=2, label=temp)
-                    
-                    colori=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
-                    plt.figure(2)
-                    x=(a[1][0:binnaggio]+a[1][1:binnaggio+1])/2
-                    y=a[0]
-#                    
-#                    plt.plot(x,y,color=colori[0+i],marker='o',label=temp)
-#                    plt.legend(bbox_to_anchor=(0,1.01,1,0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=7)
-#                    plt.savefig(working_path+"/HISTO_10_"+temp+date+".png", figuresize=(8,6), dpi=80, format="png")
-#                    plt.xlabel('Area cristalli ($\mu$m$^2$)')
-#                    plt.ylabel('Frequenze')
-#                    i=i+1
-#                    plt.hist(cristalli, bins=4, weights=weights)
-#                    
-#                    plt.savefig(working_path+"/HISTO_TOT"+temp+".png", figuresize=(8,6), dpi=80, format="png")
-                    area_histo=np.vstack([area_histo,x])
-                    frequenze_histo=np.vstack([frequenze_histo,y])
-                    
+                #histo_punti (a,x,y,temp,i)   
+#                plt.plot(x,y,color=colori[0+i],marker='o',label=temp)
+#                plt.legend(bbox_to_anchor=(0,1.01,1,0.2), loc="lower left", mode="expand", borderaxespad=0, ncol=7)
+#                plt.xlabel('Area cristalli ($\mu$m$^2$)')
+#                plt.ylabel('Frequenze')
+#                plt.savefig(working_path+"/HISTO_10_"+temp+date+".png", figuresize=(8,6), dpi=80, format="png")
+##                #histo_punti(cristalli,binnaggio,temp,i)
+#                i=i+1
+##                   
+                frequenze_histo=np.vstack([frequenze_histo,y])
+                area_histo=np.vstack([area_histo,x])
+#                
+            area_histo_tot=area_histo+area_histo_tot
                 
-                frequenze_histo_tot=frequenze_histo+frequenze_histo_tot
-                area_histo_tot=area_histo+area_histo_tot
-                
-                #plt.clf() #cancella da un campione all'altro,le temperature me le sovrappone
-            
-                
-                media=media_array*numeroC_array+media
-                dev=np.vstack([dev,media_array])
-                somma_cristalli=numeroC_array+somma_cristalli
+            frequenze_histo_tot=frequenze_histo+frequenze_histo_tot
+            plt.clf() #cancella da un campione all'altro,le temperature me le sovrappone
+               
+            media=media_array*numeroC_array+media
+            dev=np.vstack([dev,media_array])
+            somma_cristalli=numeroC_array+somma_cristalli
+
                  
             ######FIGURA 2. MEDIE AREE SINGOLE PER OGNI CAMPIONE in funzione della temperatura
             #####SALVO ARRAY CON LE MEDIE DI OGNI TEMPERATURA, formato txt e py
             #np.savetxt(media_path+'\media_array'+date, media_array)
             
             #np.save(medieInsieme_path+"/media_array_"+date, media_array)
-            #temperatura= [25,30,35,40,45,50,55,60,65,70, 75, 80, 85]
-            #plt.plot(temperatura,media_array, '-ro')
-            #plt.xlabel('Temperatura ($^o$C)')
-            #plt.ylabel('Media Area ($\mu$m$^2$)')
-            #plt.savefig(media_path+"/"+"medie_"+date+"_singole"+".png", figuresize=(8,6), dpi=80, format="png")
-            #plt.show()
-            #plt.clf()
+#            temperatura= [25,30,35,40,45,50,55,60,65,70, 75, 80, 85]
+#            plt.plot(temperatura,media_array, '-ro')
+#            plt.xlabel('Temperatura ($^o$C)')
+#            plt.ylabel('Media Area ($\mu$m$^2$)')
+#            plt.savefig(media_path+"/"+"medie_"+date+"_singole"+".png", figuresize=(8,6), dpi=80, format="png")
+#            plt.show()
+#            plt.clf()
             
             
             ###FIGURA 3. NUMERO CRISTALLI SINGOLI
@@ -390,8 +217,13 @@ if __name__ == '__main__':
 #            plt.clf()
 #            
         media_finale=media/somma_cristalli
-        
+        np.savetxt(mediePesate_path+"/mediePesate_"+indice, media_finale)
         if indice == "b2m_n76":
+            diff=np.subtract(dev[1:],media_finale)*np.subtract(dev[1:],media_finale) #sottratto da ogni media singola la media tra le quattro
+            somma=diff[0]+diff[1]+diff[2]
+            deviazione=np.sqrt(somma/4)
+            
+        elif indice == "b2m_G60":
             diff=np.subtract(dev[1:],media_finale)*np.subtract(dev[1:],media_finale) #sottratto da ogni media singola la media tra le quattro
             somma=diff[0]+diff[1]+diff[2]
             deviazione=np.sqrt(somma/4)
@@ -399,50 +231,65 @@ if __name__ == '__main__':
             diff=np.subtract(dev[1:],media_finale)*np.subtract(dev[1:],media_finale) #sottratto da ogni media singola la media tra le quattro
             somma=diff[0]+diff[1]+diff[2]+diff[3]
             deviazione=np.sqrt(somma/4)
-            
+        np.savetxt(mediePesate_path+"/devPesate_"+indice, deviazione)
 #           FIGURA 4. MEDIA PESATA DEI QUATTRO CAMPIONI
        # np.savetxt(mediePesate_path+"/mediePesate_"+indice, media)
        # np.savetxt(mediePesate_path+"/devS_"+indice, devS)
         
-#        def func(x, A, B, C, D):
-#            return A + B*(1/(1+np.exp((-(x)+C)/D)))
-#        if indice == "b2m_n76":
-#            xdata = np.linspace(0, 85, 2000)
-#            plt.xlim([20,90])
-#            plt.errorbar(temperatura,media_finale,yerr=deviazione,fmt='-o')
-#            plt.plot(xdata, func(xdata, 287.70441,-113.95215,63.75305,2.81386), 'r-', label='fit')
-#            plt.xlabel('Temperatura ($^o$C)')
-#            plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
-#            plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
-#            plt.legend()
-#            plt.show()
-#        
-#        else:
-#            xdata = np.linspace(0, 85, 2000)
-#            plt.xlim([20,90])
-#            plt.errorbar(temperatura,media_finale,yerr=deviazione,fmt='-o')
-#            plt.plot(xdata, func(xdata, 264.659,-65.4014,79.0663,1.55474), 'r-', label='fit')
-#            plt.xlabel('Temperatura ($^o$C)')
-#            plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
-#            plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
-#            plt.legend()
-#            plt.show()
+        def func(x, A, B, C, D):
+            return A + B*(1/(1+np.exp((-(x)+C)/D)))
+        if indice == "b2m_n76":
+            xdata = np.linspace(0, 85, 2000)
+            plt.xlim([20,90])
+            plt.errorbar(temperatura,media_finale,yerr=deviazione,fmt='-o')
+            plt.plot(xdata, func(xdata, 287.70441,-113.95215,63.75305,2.81386), 'r-', label='fit')
+            plt.xlabel('Temperatura ($^o$C)')
+            plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
+            plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
+            plt.legend()
+            plt.show()
         
+        elif indice == "b2m_WT":
+            xdata = np.linspace(0, 85, 2000)
+            plt.xlim([20,90])
+            plt.errorbar(temperatura,media_finale,yerr=deviazione,fmt='-o')
+            plt.plot(xdata, func(xdata, 264.659,-65.4014,79.0663,1.55474), 'r-', label='fit')
+            plt.xlabel('Temperatura ($^o$C)')
+            plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
+            plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
+            plt.legend()
+            plt.show()
+            
+        else:
+            xdata = np.linspace(0, 85, 2000)
+            plt.xlim([20,90])
+            plt.errorbar(temperatura,media_finale,yerr=deviazione,fmt='-o')
+            plt.plot(xdata, func(xdata, 530,-98.40819,54.25925,9.15675), 'r-', label='fit')
+            plt.xlabel('Temperatura ($^o$C)')
+            plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
+            plt.savefig(mediePesate_path+"/mediePesate_"+indice+".png", figuresize=(8,6), dpi=80, format="png")
+            plt.legend()
+            plt.show()
 
 #           FIGURA 5. QUA FACCIO GRAFICO histo totale (a punti)
-        eugenio=0
-        claudio=[25,30,35,40,45,50,55,60,65,70,75,80,85]
-        colore=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
-        for count in range(1,14):
-            plt.plot(area_histo_tot[count,:],frequenze_histo_tot[count,:],color=colore[0+eugenio],marker='o',label=claudio[count-1])
-            plt.xlabel('Area cristalli ($\mu$m$^2$)')
-            plt.ylabel('Frequenze')
-            plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-            eugenio=eugenio+1
         
-        plt.show()
-       # plt.savefig(working_path+"/HISTO_TOT_area"+".png", figuresize=(8,6), dpi=80, format="png")
-        plt.clf()   
+        #eugenio (area_histo_tot, frequenze_histo_tot)
+#        plt.show()
+#       # plt.savefig(working_path+"/HISTO_TOT_area"+".png", figuresize=(8,6), dpi=80, format="png")
+#        plt.clf() 
+#        eugenio=0
+#        claudio=[25,30,35,40,45,50,55,60,65,70,75,80,85]
+#        colore=['navy','mediumblue','blue','royalblue','dodgerblue','aqua','gold','orange','coral','tomato','red','firebrick','maroon']
+#        for count in range(1,14):
+#            plt.plot(area_histo_tot[count,:],frequenze_histo_tot[count,:],color=colore[0+eugenio],marker='o',label=claudio[count-1])
+#            plt.xlabel('Area cristalli ($\mu$m$^2$)')
+#            plt.ylabel('Frequenze')
+#            plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+#            eugenio=eugenio+1
+#        
+#        plt.show()
+#       # plt.savefig(working_path+"/HISTO_TOT_area"+".png", figuresize=(8,6), dpi=80, format="png")
+#        plt.clf()   
 #        
      #FIGURA 6. QUA FACCIO GRAFICO CON LE QUATTRO MEDIE
 #    temp=[25,30,35,40,45,50,55,60,65,70, 75, 80, 85]
