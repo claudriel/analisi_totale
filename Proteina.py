@@ -5,6 +5,7 @@ from scipy.ndimage import measurements
 from PIL import Image
 import numpy as np
 import numpy.ma as ma
+import matplotlib.pyplot as plt
 
 
 class Proteina:
@@ -74,8 +75,13 @@ class Proteina:
         print "Range Temp.      = ",self.temp[0],self.temp[len(self.temp)-1]
 
 
-    def test1:
-        return 0
+    def graf_media_aree(self):
+        
+        plt.errorbar(self.temp, self.media_aree/np.amax(self.media_aree), fmt='-o')
+        plt.xlabel('Temperatura ($^o$C)')
+        plt.ylabel('Area Media dei quattro campioni Pesata ($\mu$m$^2$)')
+        plt.savefig(self.name+".png", figuresize=(8,6), dpi=80, format="png")
+        plt.clf()
 
-    def test2:
+    def test2(self):
         return 0
